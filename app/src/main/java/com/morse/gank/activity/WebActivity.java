@@ -60,6 +60,10 @@ public class WebActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         WebSettings settings = mWebView.getSettings();
+        //加快渲染，提高渲染优先级
+        settings.setRenderPriority(WebSettings.RenderPriority.HIGH);
+        //把图片渲染放到最后
+        settings.setBlockNetworkImage(true);
         //允许加载javascript插件
         settings.setJavaScriptEnabled(true);
         //设置缓存
