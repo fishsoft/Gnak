@@ -9,6 +9,7 @@ import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -50,24 +51,33 @@ public class WebActivity extends AppCompatActivity {
         setContentView(R.layout.activity_web);
         ButterKnife.bind(this);
 
-        Intent intent=getIntent();
-        String url=intent.getStringExtra("url");
+        Intent intent = getIntent();
+        String url = intent.getStringExtra("url");
         mWebView.loadUrl(url);
 
         setSupportActionBar(mToolbar);
-        ActionBar actionBar=getSupportActionBar();
+        ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        WebSettings settings=mWebView.getSettings();
+        WebSettings settings = mWebView.getSettings();
+        //允许加载javascript插件
         settings.setJavaScriptEnabled(true);
+        //设置缓存
         settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        //调整图片适应屏幕
         settings.setUseWideViewPort(true);
+        //界面缩小到屏幕大小
         settings.setLoadWithOverviewMode(true);
+        //支持手动缩放
+        settings.setBuiltInZoomControls(true);
+        settings.setSupportZoom(true);
+        //支持web插件
         settings.setPluginState(WebSettings.PluginState.ON);
 
         mWebView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                //如果view里面有连接，可以加载连接
                 view.loadUrl(url);
                 return true;
             }
@@ -75,15 +85,37 @@ public class WebActivity extends AppCompatActivity {
         mWebView.setWebChromeClient(new WebChromeClient());
     }
 
+    /**
+     * 解决页面销毁，但是视频还在播放问题
+     */
     @Override
     protected void onResume() {
         super.onResume();
         mWebView.onResume();
     }
 
+    /**
+     * 解决页面销毁，但是视频还在播放问题
+     */
     @Override
     protected void onPause() {
         super.onPause();
         mWebView.onPause();
+    }
+
+    /**
+     * 返回键监听
+     *
+     * @param keyCode
+     * @param event
+     * @return
+     */
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK) && mWebView.canGoBack()) {
+            mWebView.goBack();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }
