@@ -1,15 +1,17 @@
 package com.morse.gank.activity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.http.SslError;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -40,8 +42,8 @@ public class WebActivity extends AppCompatActivity {
     AppBarLayout mAppBarLayout;
     @Bind(R.id.webView)
     WebView mWebView;
-    @Bind(R.id.nsv_content)
-    NestedScrollView mNsvContent;
+//    @Bind(R.id.nsv_content)
+//    NestedScrollView mNsvContent;
     @Bind(R.id.gson_content)
     CoordinatorLayout mGsonContent;
 
@@ -84,6 +86,23 @@ public class WebActivity extends AppCompatActivity {
                 //如果view里面有连接，可以加载连接
                 view.loadUrl(url);
                 return true;
+            }
+
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                view.getSettings().setBlockNetworkImage(false);
+            }
+
+            @Override
+            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+                super.onReceivedSslError(view, handler, error);
+                handler.proceed();
             }
         });
         mWebView.setWebChromeClient(new WebChromeClient());
