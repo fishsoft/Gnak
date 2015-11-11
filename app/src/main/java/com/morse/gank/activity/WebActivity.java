@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,6 +18,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.morse.gank.R;
+import com.morse.gank.utils.NetUtils;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -27,6 +29,8 @@ import butterknife.ButterKnife;
  */
 public class WebActivity extends AppCompatActivity {
 
+    private static final String APP_CACHE_DIRNAME = "/webcache"; // web缓存目录
+
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
     @Bind(R.id.webView)
@@ -35,9 +39,15 @@ public class WebActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_web);
-        ButterKnife.bind(this);
+        if (NetUtils.isNetWork(WebActivity.this)) {
+            setContentView(R.layout.activity_web);
+            ButterKnife.bind(this);
+            initView();
+        } else
+            setContentView(R.layout.no_net);
+    }
 
+    private void initView() {
         Intent intent = getIntent();
         String url = intent.getStringExtra("url");
         mWebView.loadUrl(url);
@@ -46,6 +56,10 @@ public class WebActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
+        initWebSetting();
+    }
+
+    private void initWebSetting() {
         WebSettings settings = mWebView.getSettings();
         //加快渲染，提高渲染优先级
         settings.setRenderPriority(WebSettings.RenderPriority.HIGH);
@@ -55,6 +69,20 @@ public class WebActivity extends AppCompatActivity {
         settings.setJavaScriptEnabled(true);
         //设置缓存
         settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+//        // 开启DOM storage API 功能
+//        mWebView.getSettings().setDomStorageEnabled(true);
+//        // 开启database storage API功能
+//        mWebView.getSettings().setDatabaseEnabled(true);
+//        String cacheDirPath = getFilesDir().getAbsolutePath()
+//                + APP_CACHE_DIRNAME;
+//        Log.i("cachePath", cacheDirPath);
+//        // 设置数据库缓存路径
+//        mWebView.getSettings().setDatabasePath(cacheDirPath); // API 19 deprecated
+//        // 设置Application caches缓存目录
+//        mWebView.getSettings().setAppCachePath(cacheDirPath);
+//        // 开启Application Cache功能
+//        mWebView.getSettings().setAppCacheEnabled(true);
+
         //调整图片适应屏幕
         settings.setUseWideViewPort(true);
         //界面缩小到屏幕大小
@@ -69,7 +97,8 @@ public class WebActivity extends AppCompatActivity {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 //如果view里面有连接，可以加载连接
-                view.loadUrl(url);
+                if (!TextUtils.isEmpty(url) && NetUtils.isNetWork(WebActivity.this))
+                    view.loadUrl(url);
                 return true;
             }
 
@@ -99,7 +128,8 @@ public class WebActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        mWebView.onResume();
+        if (null != mWebView)
+            mWebView.onResume();
     }
 
     /**
@@ -108,7 +138,8 @@ public class WebActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        mWebView.onPause();
+        if (null != mWebView)
+            mWebView.onPause();
     }
 
     /**
@@ -120,10 +151,10 @@ public class WebActivity extends AppCompatActivity {
      */
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if ((keyCode == KeyEvent.KEYCODE_BACK) && mWebView.canGoBack()) {
+        if ((null != mWebView && keyCode == KeyEvent.KEYCODE_BACK) && mWebView.canGoBack()) {
             mWebView.goBack();
             return true;
-        }else if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
+        } else if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
             finish();
             return true;
         }
@@ -142,7 +173,7 @@ public class WebActivity extends AppCompatActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case android.R.id.home:
                 mWebView.goBack();
                 break;

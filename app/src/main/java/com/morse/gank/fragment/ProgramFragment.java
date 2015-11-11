@@ -1,6 +1,7 @@
 package com.morse.gank.fragment;
 
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -8,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -19,6 +21,7 @@ import com.morse.gank.beans.Bean;
 import com.morse.gank.beans.ProgramBean;
 import com.morse.gank.utils.HttpUtils;
 import com.morse.gank.utils.JSONUtils;
+import com.morse.gank.utils.NetUtils;
 
 import java.util.ArrayList;
 
@@ -56,8 +59,17 @@ public class ProgramFragment extends BaseFragment implements SwipeRefreshLayout.
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mView = inflater.inflate(R.layout.fragment_program, null);
-        ButterKnife.bind(this, mView);
+        if (NetUtils.isNetWork(getActivity())) {
+            mView = inflater.inflate(R.layout.fragment_program, null);
+            ButterKnife.bind(this, mView);
+            initView();
+        } else {
+            mView = inflater.inflate(R.layout.no_net, null);
+        }
+        return mView;
+    }
+
+    private void initView() {
         mSwipe.setOnRefreshListener(this);
         mBeans = new ArrayList<Bean>();
         final GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), 1);
@@ -65,22 +77,28 @@ public class ProgramFragment extends BaseFragment implements SwipeRefreshLayout.
         mAdapter = new ProgramAdapter(getActivity(), mBeans, mTitle);
         mRecyler.setLayoutManager(layoutManager);
         mRecyler.setAdapter(mAdapter);
+        //实现下拉刷新
         mRecyler.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if (newState == RecyclerView.SCROLL_STATE_IDLE && mLastItem + 1 == mAdapter.getItemCount()) {
-                    initData(index++);
+                    if (NetUtils.isNetWork(getActivity())) {
+                        initData(index++);
+                    } else {
+                        Snackbar.make(mView, "网络异常", Snackbar.LENGTH_SHORT).show();
+                        refreshFinish();
+                        return;
+                    }
                 }
             }
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                mLastItem=layoutManager.findLastVisibleItemPosition();
+                mLastItem = layoutManager.findLastVisibleItemPosition();
             }
         });
-        return mView;
     }
 
     @Override
@@ -89,8 +107,16 @@ public class ProgramFragment extends BaseFragment implements SwipeRefreshLayout.
         initData(index);
     }
 
+    /**
+     * 获取网络数据
+     */
     private void initData(int i) {
 
+        if (!NetUtils.isNetWork(getActivity())) {
+            refreshFinish();
+            Snackbar.make(mView,"网络异常",Snackbar.LENGTH_LONG).show();
+            return;
+        }
         RequestQueue queue = Volley.newRequestQueue(getActivity());
         StringRequest request = new StringRequest(HttpUtils.PRE_URL + mTitle + HttpUtils.SUF_URL + index, new Response.Listener
                 () {
@@ -112,6 +138,8 @@ public class ProgramFragment extends BaseFragment implements SwipeRefreshLayout.
 
             }
         });
+        //设置网络请求超时
+        request.setRetryPolicy(new DefaultRetryPolicy(5 * 1000, 1, 1.0f));
         queue.add(request);
     }
 
