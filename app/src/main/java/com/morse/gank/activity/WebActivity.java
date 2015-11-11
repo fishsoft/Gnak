@@ -4,20 +4,16 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.http.SslError;
 import android.os.Bundle;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.morse.gank.R;
 
@@ -30,22 +26,10 @@ import butterknife.ButterKnife;
  */
 public class WebActivity extends AppCompatActivity {
 
-    @Bind(R.id.news_header)
-    ImageView mNewsHeader;
-    @Bind(R.id.img_source)
-    TextView mImgSource;
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
-    @Bind(R.id.collapsing_toolbar_layout)
-    CollapsingToolbarLayout mCollapsingToolbarLayout;
-    @Bind(R.id.app_bar_layout)
-    AppBarLayout mAppBarLayout;
     @Bind(R.id.webView)
     WebView mWebView;
-//    @Bind(R.id.nsv_content)
-//    NestedScrollView mNsvContent;
-    @Bind(R.id.gson_content)
-    CoordinatorLayout mGsonContent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,8 +42,8 @@ public class WebActivity extends AppCompatActivity {
         mWebView.loadUrl(url);
 
         setSupportActionBar(mToolbar);
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+//        ActionBar actionBar = getSupportActionBar();
+//        actionBar.setDisplayHomeAsUpEnabled(true);
 
         WebSettings settings = mWebView.getSettings();
         //加快渲染，提高渲染优先级
@@ -140,5 +124,29 @@ public class WebActivity extends AppCompatActivity {
             return true;
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        switch (item.getItemId()){
+//            case R.id.action_settings:
+//                break;
+            case android.R.id.home:
+                mWebView.goBack();
+                break;
+            default:
+                break;
+        }
+        return true;
     }
 }
