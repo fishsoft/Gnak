@@ -31,24 +31,27 @@
             android:textColor="@color/title_item_text_color"
             android:textSize="17dp"/>
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:padding="5dp"
+            android:paddingLeft="-5dp">
 
             <TextView
                 android:id="@+id/program_author"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
                 android:text="有时放纵"/>
 
             <TextView
                 android:id="@+id/publishedAt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
                 android:layout_marginLeft="10dp"
                 android:text="更新时间"/>
-        </LinearLayout>
+        </RelativeLayout>
     </LinearLayout>
 
 </android.support.v7.widget.CardView>

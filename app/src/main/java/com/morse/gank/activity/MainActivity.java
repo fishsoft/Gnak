@@ -1,5 +1,6 @@
 package com.morse.gank.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
@@ -9,9 +10,11 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.morse.gank.R;
 import com.morse.gank.adapter.GankAdapter;
@@ -37,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     @Bind(R.id.drawerLayout)
     DrawerLayout mDrawerLayout;
     private GankAdapter mAdapter;
+    private long exitTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,13 +92,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(MenuItem item) {
                 switch (item.getItemId()) {
-                    case R.id.navItem1:
+                    case R.id.home:
                         break;
-                    case R.id.navItem2:
+                    case R.id.program:
                         break;
-                    case R.id.navItem3:
+                    case R.id.about:
+                        Intent intent=new Intent(MainActivity.this,AboutActivity.class);
+                        MainActivity.this.startActivity(intent);
                         break;
-                    case R.id.navItem4:
+                    case R.id.contant:
                         break;
                     default:
                         break;
@@ -125,5 +131,20 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
+            if ((System.currentTimeMillis() - exitTime) > 2000) {
+                Toast.makeText(MainActivity.this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
+                exitTime = System.currentTimeMillis();
+            } else {
+                System.exit(0);
+                finish();
+            }
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

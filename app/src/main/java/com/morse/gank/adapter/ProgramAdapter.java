@@ -15,6 +15,7 @@ import com.morse.gank.R;
 import com.morse.gank.activity.WebActivity;
 import com.morse.gank.beans.Bean;
 import com.morse.gank.utils.ImageUtils;
+import com.morse.gank.utils.StringUtils;
 
 import java.util.ArrayList;
 
@@ -65,7 +66,7 @@ public class ProgramAdapter extends RecyclerView.Adapter<ProgramAdapter.ProgramH
         }
 
         holder.mProgramAuthor.setText("作者:" + mBeans.get(position).getWho());
-        holder.mPublishAt.setText("发布:" + mBeans.get(position).getPublishedAt());
+        holder.mPublishAt.setText("发布:" + StringUtils.parseTime(mBeans.get(position).getPublishedAt()));
     }
 
     @Override
@@ -91,8 +92,8 @@ public class ProgramAdapter extends RecyclerView.Adapter<ProgramAdapter.ProgramH
             mListItem.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent=new Intent(mContext, WebActivity.class);
-                    intent.putExtra("url",mBeans.get(getPosition()).getUrl());
+                    Intent intent = new Intent(mContext, WebActivity.class);
+                    intent.putExtra("url", mBeans.get(getPosition()).getUrl());
                     mContext.startActivity(intent);
                 }
             });

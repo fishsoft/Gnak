@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.http.SslError;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
@@ -42,8 +43,8 @@ public class WebActivity extends AppCompatActivity {
         mWebView.loadUrl(url);
 
         setSupportActionBar(mToolbar);
-//        ActionBar actionBar = getSupportActionBar();
-//        actionBar.setDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         WebSettings settings = mWebView.getSettings();
         //加快渲染，提高渲染优先级
@@ -122,6 +123,9 @@ public class WebActivity extends AppCompatActivity {
         if ((keyCode == KeyEvent.KEYCODE_BACK) && mWebView.canGoBack()) {
             mWebView.goBack();
             return true;
+        }else if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
+            finish();
+            return true;
         }
         return super.onKeyDown(keyCode, event);
     }
@@ -139,14 +143,12 @@ public class WebActivity extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()){
-//            case R.id.action_settings:
-//                break;
             case android.R.id.home:
                 mWebView.goBack();
                 break;
             default:
                 break;
         }
-        return true;
+        return super.onOptionsItemSelected(item);
     }
 }

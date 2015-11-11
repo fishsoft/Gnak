@@ -3,21 +3,21 @@
 
     <group android:checkableBehavior="all">
         <item
-            android:id="@+id/navItem1"
+            android:id="@+id/home"
             android:icon="@mipmap/ic_launcher"
             android:title="首页"/>
         <item
-            android:id="@+id/navItem2"
+            android:id="@+id/program"
             android:icon="@mipmap/ic_launcher"
             android:title="资源项目"/>
 
         <item
-            android:id="@+id/navItem3"
+            android:id="@+id/about"
             android:icon="@mipmap/ic_launcher"
             android:title="关于"/>
 
         <item
-            android:id="@+id/navItem4"
+            android:id="@+id/contant"
             android:icon="@mipmap/ic_launcher"
             android:title="联系我们"/>
     </group>
