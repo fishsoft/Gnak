@@ -15,4 +15,19 @@
         <item name="android:textSize">24sp</item>
     </style>
 
+    <style name="DialogTheme" parent="android:Theme.Dialog">
+        <!-- windowFram is null-->
+        <item name="android:windowFrame">@null</item>
+        <!--无标题-->
+        <item name="android:windowNoTitle">true</item>
+        <!-- 悬浮在activity之上 -->
+        <item name="android:windowIsFloating">true</item>
+        <!-- 半透明 -->
+        <item name="android:windowIsTranslucent">true</item>
+        <!-- 去掉覆盖物-->
+        <item name="android:windowContentOverlay">@null</item>
+        <!--设置背景色 -->
+        <item name="android:background">@null</item>
+    </style>
+
 </resources>

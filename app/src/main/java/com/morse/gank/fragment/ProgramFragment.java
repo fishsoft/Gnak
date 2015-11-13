@@ -1,5 +1,6 @@
 package com.morse.gank.fragment;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -44,6 +45,8 @@ public class ProgramFragment extends BaseFragment implements SwipeRefreshLayout.
     private ArrayList<Bean> mBeans;
     private ProgramAdapter mAdapter;
     private int mLastItem;
+
+    private ProgressDialog mDialog;
 
     public static ProgramFragment newInstance() {
         ProgramFragment fragment = new ProgramFragment();
@@ -114,9 +117,15 @@ public class ProgramFragment extends BaseFragment implements SwipeRefreshLayout.
 
         if (!NetUtils.isNetWork(getActivity())) {
             refreshFinish();
-            Snackbar.make(mView,"网络异常",Snackbar.LENGTH_LONG).show();
+            Snackbar.make(mView, "网络异常", Snackbar.LENGTH_LONG).show();
             return;
         }
+
+        mDialog = new ProgressDialog(getActivity());
+        mDialog.setMessage("数据加载中......");
+        mDialog.setProgressStyle(R.style.DialogTheme);
+        mDialog.show();
+
         RequestQueue queue = Volley.newRequestQueue(getActivity());
         StringRequest request = new StringRequest(HttpUtils.PRE_URL + mTitle + HttpUtils.SUF_URL + index, new Response.Listener
                 () {
@@ -146,6 +155,7 @@ public class ProgramFragment extends BaseFragment implements SwipeRefreshLayout.
     private void refreshFinish() {
         if (null != mSwipe) {
             mSwipe.setRefreshing(false);
+            mDialog.dismiss();
         }
     }
 
