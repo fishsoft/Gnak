@@ -1,24 +1,17 @@
 package com.morse.gank.activity;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.http.SslError;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.webkit.SslErrorHandler;
-import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 
 import com.morse.gank.R;
 import com.morse.gank.utils.NetUtils;
+import com.morse.gank.views.ProgressWebView;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -34,7 +27,7 @@ public class WebActivity extends AppCompatActivity {
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
     @Bind(R.id.webView)
-    WebView mWebView;
+    ProgressWebView mWebView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,71 +48,6 @@ public class WebActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-
-        initWebSetting();
-    }
-
-    private void initWebSetting() {
-        WebSettings settings = mWebView.getSettings();
-        //加快渲染，提高渲染优先级
-        settings.setRenderPriority(WebSettings.RenderPriority.HIGH);
-        //把图片渲染放到最后
-        settings.setBlockNetworkImage(true);
-        //允许加载javascript插件
-        settings.setJavaScriptEnabled(true);
-        //设置缓存
-        settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
-//        // 开启DOM storage API 功能
-//        mWebView.getSettings().setDomStorageEnabled(true);
-//        // 开启database storage API功能
-//        mWebView.getSettings().setDatabaseEnabled(true);
-//        String cacheDirPath = getFilesDir().getAbsolutePath()
-//                + APP_CACHE_DIRNAME;
-//        Log.i("cachePath", cacheDirPath);
-//        // 设置数据库缓存路径
-//        mWebView.getSettings().setDatabasePath(cacheDirPath); // API 19 deprecated
-//        // 设置Application caches缓存目录
-//        mWebView.getSettings().setAppCachePath(cacheDirPath);
-//        // 开启Application Cache功能
-//        mWebView.getSettings().setAppCacheEnabled(true);
-
-        //调整图片适应屏幕
-        settings.setUseWideViewPort(true);
-        //界面缩小到屏幕大小
-        settings.setLoadWithOverviewMode(true);
-        //支持手动缩放
-        settings.setBuiltInZoomControls(true);
-        settings.setSupportZoom(true);
-        //支持web插件
-        settings.setPluginState(WebSettings.PluginState.ON);
-
-        mWebView.setWebViewClient(new WebViewClient() {
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                //如果view里面有连接，可以加载连接
-                if (!TextUtils.isEmpty(url) && NetUtils.isNetWork(WebActivity.this))
-                    view.loadUrl(url);
-                return true;
-            }
-
-            @Override
-            public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                super.onPageStarted(view, url, favicon);
-            }
-
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
-                view.getSettings().setBlockNetworkImage(false);
-            }
-
-            @Override
-            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-                super.onReceivedSslError(view, handler, error);
-                handler.proceed();
-            }
-        });
-        mWebView.setWebChromeClient(new WebChromeClient());
     }
 
     /**

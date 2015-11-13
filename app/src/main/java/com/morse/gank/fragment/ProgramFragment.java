@@ -135,7 +135,7 @@ public class ProgramFragment extends BaseFragment implements SwipeRefreshLayout.
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
+                refreshFinish();
             }
         });
         //设置网络请求超时
