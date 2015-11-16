@@ -3,9 +3,7 @@ package com.morse.gank.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -21,7 +19,7 @@ import butterknife.OnClick;
  * 作者：Morse on 2015/11/11 11:44
  * 邮箱：zm902485jgsurjgc@163.com
  */
-public class AboutActivity extends AppCompatActivity {
+public class AboutActivity extends BaseActivity {
 
     @Bind(R.id.about_toolbar)
     Toolbar mAboutToolbar;
@@ -54,11 +52,4 @@ public class AboutActivity extends AppCompatActivity {
         finish();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-        }
-        return super.onOptionsItemSelected(item);
-    }
 }

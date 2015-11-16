@@ -99,16 +99,21 @@ public class MainActivity extends AppCompatActivity {
         mNavigation.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem item) {
+                Intent intent=new Intent();
                 switch (item.getItemId()) {
                     case R.id.home:
                         break;
-                    case R.id.program:
+                    case R.id.collection:
+                        intent.setClass(MainActivity.this,CollectActivity.class);
+                        startActivity(intent);
                         break;
                     case R.id.about:
-                        Intent intent=new Intent(MainActivity.this,AboutActivity.class);
-                        MainActivity.this.startActivity(intent);
+                        intent.setClass(MainActivity.this,AboutActivity.class);
+                        startActivity(intent);
                         break;
                     case R.id.contant:
+                        intent.setClass(MainActivity.this,ContactUsActivity.class);
+                        startActivity(intent);
                         break;
                     default:
                         break;

@@ -29,6 +29,8 @@ public class WebActivity extends AppCompatActivity {
     @Bind(R.id.webView)
     ProgressWebView mWebView;
 
+    private String mUrl;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,8 +44,8 @@ public class WebActivity extends AppCompatActivity {
 
     private void initView() {
         Intent intent = getIntent();
-        String url = intent.getStringExtra("url");
-        mWebView.loadUrl(url);
+        mUrl = intent.getStringExtra("url");
+        mWebView.loadUrl(mUrl);
 
         setSupportActionBar(mToolbar);
         ActionBar actionBar = getSupportActionBar();
@@ -103,7 +105,10 @@ public class WebActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
             case android.R.id.home:
-                mWebView.goBack();
+                if (mUrl.equals(mWebView.getUrl()))
+                    finish();
+                else
+                    mWebView.goBack();
                 break;
             default:
                 break;
