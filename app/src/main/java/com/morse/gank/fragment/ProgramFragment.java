@@ -19,9 +19,9 @@ import com.morse.gank.R;
 import com.morse.gank.adapter.ProgramAdapter;
 import com.morse.gank.beans.Bean;
 import com.morse.gank.beans.ProgramBean;
-import com.morse.gank.utils.UrlUtils;
 import com.morse.gank.utils.JSONUtils;
 import com.morse.gank.utils.NetUtils;
+import com.morse.gank.utils.UrlUtils;
 
 import java.util.ArrayList;
 
@@ -45,8 +45,7 @@ public class ProgramFragment extends BaseFragment implements SwipeRefreshLayout.
     private ArrayList<Bean> mBeans;
     private ProgramAdapter mAdapter;
     private int mLastItem;
-
-//    private ProgressDialog mDialog;
+//    private CollectDaoImp mCollectDaoImp;
 
     public static ProgramFragment newInstance() {
         ProgramFragment fragment = new ProgramFragment();
@@ -58,6 +57,7 @@ public class ProgramFragment extends BaseFragment implements SwipeRefreshLayout.
         super.onCreate(savedInstanceState);
         Bundle bundle = getArguments();
         mTitle = bundle.getString("title");
+//        mCollectDaoImp=new CollectDaoImp(getActivity(),mTitle);
     }
 
     @Override
@@ -80,19 +80,13 @@ public class ProgramFragment extends BaseFragment implements SwipeRefreshLayout.
         mAdapter = new ProgramAdapter(getActivity(), mBeans, mTitle);
         mRecyler.setLayoutManager(layoutManager);
         mRecyler.setAdapter(mAdapter);
-        //实现下拉刷新
+        //pull to refresh data from net
         mRecyler.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if (newState == RecyclerView.SCROLL_STATE_IDLE && mLastItem + 1 == mAdapter.getItemCount()) {
-                    if (NetUtils.isNetWork(getActivity())) {
-                        initData(index++);
-                    } else {
-                        Snackbar.make(mView, "网络异常", Snackbar.LENGTH_SHORT).show();
-                        refreshFinish();
-                        return;
-                    }
+                    initData(index++);
                 }
             }
 
@@ -111,20 +105,14 @@ public class ProgramFragment extends BaseFragment implements SwipeRefreshLayout.
     }
 
     /**
-     * 获取网络数据
+     * get data from net
      */
     private void initData(int i) {
 
         if (!NetUtils.isNetWork(getActivity())) {
-            refreshFinish();
-            Snackbar.make(mView, "网络异常", Snackbar.LENGTH_LONG).show();
+            getLocalData();
             return;
         }
-
-//        mDialog = new ProgressDialog(getActivity());
-//        mDialog.setMessage("数据加载中......");
-//        mDialog.setProgressStyle(R.style.DialogTheme);
-//        mDialog.show();
 
         RequestQueue queue = Volley.newRequestQueue(getActivity());
         StringRequest request = new StringRequest(UrlUtils.PRE_URL + mTitle + UrlUtils.SUF_URL + index, new Response.Listener
@@ -134,6 +122,7 @@ public class ProgramFragment extends BaseFragment implements SwipeRefreshLayout.
                 ProgramBean programBean = JSONUtils.parseObject(response.toString(), ProgramBean.class);
                 if (null != programBean && !programBean.isError()) {
                     ArrayList<Bean> beans = (ArrayList<Bean>) programBean.getBeans();
+//                    mCollectDaoImp.insert(beans);
                     mBeans.addAll(beans);
                     if (null != mAdapter) {
                         mAdapter.notifyDataSetChanged();
@@ -144,18 +133,31 @@ public class ProgramFragment extends BaseFragment implements SwipeRefreshLayout.
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                getLocalData();
                 refreshFinish();
             }
         });
-        //设置网络请求超时
+        //set timeout for http
         request.setRetryPolicy(new DefaultRetryPolicy(5 * 1000, 1, 1.0f));
         queue.add(request);
+    }
+
+    /**
+     * get data from local database
+     */
+    private void getLocalData() {
+//        List<Bean> beans=mCollectDaoImp.query(mTitle);
+//        if (null!=beans){
+//            mBeans.addAll(beans);
+//        }else {
+            Snackbar.make(mView, "网络异常", Snackbar.LENGTH_LONG).show();
+//        }
+        refreshFinish();
     }
 
     private void refreshFinish() {
         if (null != mSwipe) {
             mSwipe.setRefreshing(false);
-//            mDialog.dismiss();
         }
     }
 

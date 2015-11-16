@@ -2,6 +2,7 @@ package com.morse.gank.db;
 
 import com.morse.gank.beans.Bean;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,6 +17,13 @@ public interface CollectDao {
      * @param bean
      */
     public void insert(Bean bean);
+
+    /**
+     * 插入文章
+     *
+     * @param beans
+     */
+    public void insert(ArrayList<Bean> beans);
 
 
     /**
