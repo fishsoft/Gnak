@@ -66,8 +66,9 @@ public class ProgressWebView extends WebView {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 //如果view里面有连接，可以加载连接
-                if (!TextUtils.isEmpty(url) && NetUtils.isNetWork(context))
+                if (!TextUtils.isEmpty(url) && NetUtils.isNetWork(context)) {
                     view.loadUrl(url);
+                }
                 return true;
             }
 
@@ -90,6 +91,15 @@ public class ProgressWebView extends WebView {
         });
     }
 
+    @Override
+    protected void onScrollChanged(int l, int t, int oldl, int oldt) {
+        LayoutParams lp = (LayoutParams) progressbar.getLayoutParams();
+        lp.x = l;
+        lp.y = t;
+        progressbar.setLayoutParams(lp);
+        super.onScrollChanged(l, t, oldl, oldt);
+    }
+
     public class WebChromeClient extends android.webkit.WebChromeClient {
         @Override
         public void onProgressChanged(WebView view, int newProgress) {
@@ -103,14 +113,5 @@ public class ProgressWebView extends WebView {
             super.onProgressChanged(view, newProgress);
         }
 
-    }
-
-    @Override
-    protected void onScrollChanged(int l, int t, int oldl, int oldt) {
-        LayoutParams lp = (LayoutParams) progressbar.getLayoutParams();
-        lp.x = l;
-        lp.y = t;
-        progressbar.setLayoutParams(lp);
-        super.onScrollChanged(l, t, oldl, oldt);
     }
 }

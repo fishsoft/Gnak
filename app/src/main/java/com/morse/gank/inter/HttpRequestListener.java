@@ -5,6 +5,7 @@ package com.morse.gank.inter;
  * 邮箱：zm902485jgsurjgc@163.com
  */
 public interface HttpRequestListener {
+
     public void onSuccess(String s);
 
     public void onFailure(String s);

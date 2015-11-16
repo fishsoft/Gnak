@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 /**
+ * Fragment基类
  * 作者：Morse on 2015/11/9 10:22
  * 邮箱：zm902485jgsurjgc@163.com
  */

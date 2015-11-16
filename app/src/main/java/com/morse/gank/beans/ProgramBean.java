@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 /**
+ *
  * 作者：Morse on 2015/11/9 14:41
  * 邮箱：zm902485jgsurjgc@163.com
  */

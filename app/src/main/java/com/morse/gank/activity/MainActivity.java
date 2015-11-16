@@ -2,7 +2,6 @@ package com.morse.gank.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -24,6 +23,9 @@ import java.util.ArrayList;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
+/**
+ * 主界面
+ */
 public class MainActivity extends AppCompatActivity {
 
     public ArrayList<String> mTitles;
@@ -33,8 +35,6 @@ public class MainActivity extends AppCompatActivity {
     TabLayout mTabLayout;
     @Bind(R.id.viewpager)
     ViewPager mViewpager;
-    @Bind(R.id.coordinator)
-    CoordinatorLayout mCoordinator;
     @Bind(R.id.navigation)
     NavigationView mNavigation;
     @Bind(R.id.drawerLayout)
@@ -48,8 +48,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        //设置actionBar
         setSupportActionBar(mToolbar);
 
+        //设置导航开关
         if (mNavigation != null) {
             setupDrawerContent();
             setupActionBar();
@@ -69,6 +71,9 @@ public class MainActivity extends AppCompatActivity {
         mTabLayout.setupWithViewPager(mViewpager);
     }
 
+    /**
+     * 设置actionBar开关
+     */
     private void setupActionBar() {
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.toogle_open,
                 R.string.toggle_close) {
@@ -87,6 +92,9 @@ public class MainActivity extends AppCompatActivity {
         toggle.syncState();
     }
 
+    /**
+     * 设置导航菜单事件
+     */
     private void setupDrawerContent() {
         mNavigation.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -133,6 +141,12 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * 监听物理返回键
+     * @param keyCode
+     * @param event
+     * @return
+     */
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {

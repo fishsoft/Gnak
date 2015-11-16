@@ -17,10 +17,12 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
+ * 关于页面
  * 作者：Morse on 2015/11/11 11:44
  * 邮箱：zm902485jgsurjgc@163.com
  */
 public class AboutActivity extends AppCompatActivity {
+
     @Bind(R.id.about_toolbar)
     Toolbar mAboutToolbar;
     @Bind(R.id.about_image)
@@ -31,8 +33,6 @@ public class AboutActivity extends AppCompatActivity {
     TextView mVersion;
     @Bind(R.id.about_header)
     LinearLayout mAboutHeader;
-    @Bind(R.id.download)
-    TextView mDownload;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

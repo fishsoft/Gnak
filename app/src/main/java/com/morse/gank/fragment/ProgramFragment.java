@@ -1,6 +1,5 @@
 package com.morse.gank.fragment;
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -20,7 +19,7 @@ import com.morse.gank.R;
 import com.morse.gank.adapter.ProgramAdapter;
 import com.morse.gank.beans.Bean;
 import com.morse.gank.beans.ProgramBean;
-import com.morse.gank.utils.HttpUtils;
+import com.morse.gank.utils.UrlUtils;
 import com.morse.gank.utils.JSONUtils;
 import com.morse.gank.utils.NetUtils;
 
@@ -30,6 +29,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 /**
+ * 详细信息显示类
  * 作者：Morse on 2015/11/9 10:24
  * 邮箱：zm902485jgsurjgc@163.com
  */
@@ -46,7 +46,7 @@ public class ProgramFragment extends BaseFragment implements SwipeRefreshLayout.
     private ProgramAdapter mAdapter;
     private int mLastItem;
 
-    private ProgressDialog mDialog;
+//    private ProgressDialog mDialog;
 
     public static ProgramFragment newInstance() {
         ProgramFragment fragment = new ProgramFragment();
@@ -121,13 +121,13 @@ public class ProgramFragment extends BaseFragment implements SwipeRefreshLayout.
             return;
         }
 
-        mDialog = new ProgressDialog(getActivity());
-        mDialog.setMessage("数据加载中......");
-        mDialog.setProgressStyle(R.style.DialogTheme);
-        mDialog.show();
+//        mDialog = new ProgressDialog(getActivity());
+//        mDialog.setMessage("数据加载中......");
+//        mDialog.setProgressStyle(R.style.DialogTheme);
+//        mDialog.show();
 
         RequestQueue queue = Volley.newRequestQueue(getActivity());
-        StringRequest request = new StringRequest(HttpUtils.PRE_URL + mTitle + HttpUtils.SUF_URL + index, new Response.Listener
+        StringRequest request = new StringRequest(UrlUtils.PRE_URL + mTitle + UrlUtils.SUF_URL + index, new Response.Listener
                 () {
             @Override
             public void onResponse(Object response) {
@@ -155,7 +155,7 @@ public class ProgramFragment extends BaseFragment implements SwipeRefreshLayout.
     private void refreshFinish() {
         if (null != mSwipe) {
             mSwipe.setRefreshing(false);
-            mDialog.dismiss();
+//            mDialog.dismiss();
         }
     }
 

@@ -3,6 +3,7 @@ package com.morse.gank.beans;
 import com.google.gson.annotations.SerializedName;
 
 /**
+ * JavaBean基类
  * 作者：Morse on 2015/11/9 11:41
  * 邮箱：zm902485jgsurjgc@163.com
  */
