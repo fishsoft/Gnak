@@ -125,16 +125,29 @@ public class WebActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * 分享
+     */
     private void share() {
-
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_TEXT, getCurrentBean().getDesc() + "：" + "\n" + mUrl);
+        startActivity(Intent.createChooser(intent, "干货集中营大放送咯！！！！！！"));
     }
 
+    /**
+     * 收藏
+     */
     private void collect() {
-        Bean bean = mManager.queryByUrl(mUrl, ConfigUtils.DATABASENAME_GANK);
+        Bean bean = getCurrentBean();
         if (null != bean && null == mManager.queryByUrl(mUrl, ConfigUtils.DATABASENAME_COLLECT)) {
             mManager.insert(bean, ConfigUtils.DATABASENAME_COLLECT);
             ToastUtils.show(WebActivity.this, "收藏成功");
         } else
             ToastUtils.show(WebActivity.this, "文章已经收藏了");
+    }
+
+    private Bean getCurrentBean(){
+        return mManager.queryByUrl(mUrl, ConfigUtils.DATABASENAME_GANK);
     }
 }
