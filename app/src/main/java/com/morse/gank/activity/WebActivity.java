@@ -10,7 +10,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.morse.gank.R;
-import com.morse.gank.utils.NetUtils;
+import com.morse.gank.beans.Bean;
+import com.morse.gank.db.DbManager;
+import com.morse.gank.utils.ConfigUtils;
+import com.morse.gank.utils.ToastUtils;
 import com.morse.gank.views.ProgressWebView;
 
 import butterknife.Bind;
@@ -30,19 +33,18 @@ public class WebActivity extends AppCompatActivity {
     ProgressWebView mWebView;
 
     private String mUrl;
+    private DbManager mManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (NetUtils.isNetWork(WebActivity.this)) {
-            setContentView(R.layout.activity_web);
-            ButterKnife.bind(this);
-            initView();
-        } else
-            setContentView(R.layout.no_net);
+        setContentView(R.layout.activity_web);
+        ButterKnife.bind(this);
+        initView();
     }
 
     private void initView() {
+        mManager = new DbManager(this);
         Intent intent = getIntent();
         mUrl = intent.getStringExtra("url");
         mWebView.loadUrl(mUrl);
@@ -104,15 +106,35 @@ public class WebActivity extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
-            case android.R.id.home:
+            case android.R.id.home: {
                 if (mUrl.equals(mWebView.getUrl()))
                     finish();
                 else
                     mWebView.goBack();
+            }
+            break;
+            case R.id.collect_program:
+                collect();
+                break;
+            case R.id.share_program:
+                share();
                 break;
             default:
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void share() {
+
+    }
+
+    private void collect() {
+        Bean bean = mManager.queryByUrl(mUrl, ConfigUtils.DATABASENAME_GANK);
+        if (null != bean && null == mManager.queryByUrl(mUrl, ConfigUtils.DATABASENAME_COLLECT)) {
+            mManager.insert(bean, ConfigUtils.DATABASENAME_COLLECT);
+            ToastUtils.show(WebActivity.this, "收藏成功");
+        } else
+            ToastUtils.show(WebActivity.this, "文章已经收藏了");
     }
 }

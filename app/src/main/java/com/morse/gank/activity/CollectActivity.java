@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import com.morse.gank.R;
 import com.morse.gank.adapter.ProgramAdapter;
 import com.morse.gank.beans.Bean;
+import com.morse.gank.db.DbManager;
 
 import java.util.ArrayList;
 
@@ -35,12 +36,15 @@ public class CollectActivity extends BaseActivity implements SwipeRefreshLayout.
     private ArrayList<Bean> mBeans;
     private LinearLayoutManager layoutManager;
     private int mLastItem;
+    private DbManager mManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_collect);
         ButterKnife.bind(this);
+
+        mManager = new DbManager(this);
 
         mSwipe.setOnRefreshListener(this);
         mBeans = new ArrayList<Bean>();
@@ -61,6 +65,7 @@ public class CollectActivity extends BaseActivity implements SwipeRefreshLayout.
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 //查数据库
+                getLocalData();
             }
 
             @Override
@@ -69,16 +74,32 @@ public class CollectActivity extends BaseActivity implements SwipeRefreshLayout.
                 mLastItem = layoutManager.findLastVisibleItemPosition();
             }
         });
+
+        getLocalData();
     }
 
     @Override
     public void onRefresh() {
         //查数据库
+        getLocalData();
+    }
+
+    private void getLocalData() {
+        ArrayList<Bean> beans = mManager.query("collect");
+        mBeans.clear();
+        mBeans.addAll(beans);
+        mAdapter.notifyDataSetChanged();
+        finishRefresh();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mSwipe.setRefreshing(false);
+        finishRefresh();
+    }
+
+    private void finishRefresh() {
+        if (null != mSwipe)
+            mSwipe.setRefreshing(false);
     }
 }

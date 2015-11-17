@@ -15,8 +15,10 @@ import java.util.ArrayList;
 public class DbManager {
     private DbHelper helper;
     private SQLiteDatabase db;
+    private Context mContext;
 
     public DbManager(Context context) {
+        mContext = context;
         helper = new DbHelper(context);
         //因为getWritableDatabase内部调用了mContext.openOrCreateDatabase(mName, 0, mFactory);
         //所以要确保context已初始化,我们可以把实例化DBManager的步骤放在Activity的onCreate里
@@ -24,27 +26,32 @@ public class DbManager {
     }
 
     /**
-     * add persons
+     * add a data
      *
      * @param beans
      */
-    public void insert(ArrayList<Bean> beans) {
+    public void insert(ArrayList<Bean> beans, String dataBaseName) {
         db.beginTransaction();  //开始事务
         try {
             for (Bean bean : beans) {
-                int flag = bolean2int(bean);
-                db.execSQL("INSERT INTO gank VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)", new Object[]{bean.getWho(), bean.getPublishedAt(),
-                        bean.getDesc(), bean.getType(), bean.getUrl(), flag, bean.getObjectId(), bean
-                        .getCreatedAt(), bean.getUpdatedAt()});
+                if (null == queryByUrl(bean.getUrl(), dataBaseName)) {
+                    int flag = bolean2int(bean);
+                    db.execSQL("INSERT INTO " + dataBaseName + " VALUES(null,?, ?, ?, ?, ?, ?,?, ? ,?)", new Object[]{bean.getWho(),
+                            bean.getPublishedAt(), bean.getDesc(), bean.getType(), bean.getUrl(),
+                            flag, bean.getObjectId(), bean.getCreatedAt(), bean.getUpdatedAt()});
+                }
             }
             db.setTransactionSuccessful();  //设置事务成功完成
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             db.endTransaction();    //结束事务
         }
     }
 
     /**
-     * 将boolean型数据转成int型
+     * boolean to int data
+     *
      * @param bean
      * @return
      */
@@ -57,36 +64,53 @@ public class DbManager {
         return flag;
     }
 
-    public void insert(Bean bean){
-        db.beginTransaction();
-
-    }
-
     /**
-     * delete old person
+     * insert a data
      *
      * @param bean
      */
-    public void delete(Bean bean) {
-        String sql = "delete from gank where desc=" + bean.getDesc();
+    public void insert(Bean bean, String dataBaseName) {
+        db.beginTransaction();
+        try {
+            if (null == queryByUrl(bean.getUrl(), dataBaseName)) {
+                int flag = bolean2int(bean);
+                db.execSQL("INSERT INTO " + dataBaseName + " VALUES(null,?, ?, ?, ?, ?, ?,?, ? ,?)", new Object[]{bean.getWho(),
+                        bean.getPublishedAt(), bean.getDesc(), bean.getType(), bean.getUrl(),
+                        flag, bean.getObjectId(), bean.getCreatedAt(), bean.getUpdatedAt()});
+                db.setTransactionSuccessful();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            db.endTransaction();
+        }
+    }
+
+    /**
+     * delete
+     *
+     * @param bean
+     */
+    public void delete(Bean bean, String dataBaseName) {
+        String sql = "delete from " + dataBaseName + " where desc=" + bean.getDesc();
         db.execSQL(sql);
     }
 
     /**
-     * query all persons, return list
+     * query all
      *
      * @return List<Person>
      */
-    public ArrayList<Bean> query() {
+    public ArrayList<Bean> query(String dataBaseName) {
         ArrayList<Bean> beans = new ArrayList<Bean>();
-        Cursor c = queryTheCursor();
+        Cursor c = db.rawQuery("SELECT * FROM " + dataBaseName, null);
         while (c.moveToNext()) {
             Bean bean = new Bean();
             int2boolean(c, bean);
             bean.setWho(c.getString(c.getColumnIndex("who")));
-            bean.setPublishedAt(c.getString(c.getColumnIndex("name")));
+            bean.setPublishedAt(c.getString(c.getColumnIndex("publishedAt")));
             bean.setDesc(c.getString(c.getColumnIndex("desc")));
-            bean.setType(c.getString(c.getColumnIndex("info")));
+            bean.setType(c.getString(c.getColumnIndex("type")));
             bean.setUrl(c.getString(c.getColumnIndex("url")));
             bean.setObjectId(c.getString(c.getColumnIndex("objectId")));
             bean.setCreatedAt(c.getString(c.getColumnIndex("createdAt")));
@@ -98,7 +122,59 @@ public class DbManager {
     }
 
     /**
-     * 将int型数据转换成boolean
+     * query all
+     *
+     * @return List<Person>
+     */
+    public Bean queryByUrl(String url, String dataBaseName) {
+        Cursor c = db.rawQuery("SELECT * FROM " + dataBaseName + " where url=?", new String[]{url});
+        while (c.moveToNext()) {
+            if (c.getString(c.getColumnIndex("url")).equals(url)) {
+                Bean bean = new Bean();
+                int2boolean(c, bean);
+                bean.setWho(c.getString(c.getColumnIndex("who")));
+                bean.setPublishedAt(c.getString(c.getColumnIndex("publishedAt")));
+                bean.setDesc(c.getString(c.getColumnIndex("desc")));
+                bean.setType(c.getString(c.getColumnIndex("type")));
+                bean.setUrl(c.getString(c.getColumnIndex("url")));
+                bean.setObjectId(c.getString(c.getColumnIndex("objectId")));
+                bean.setCreatedAt(c.getString(c.getColumnIndex("createdAt")));
+                bean.setUpdatedAt(c.getString(c.getColumnIndex("updatedAt")));
+                c.close();
+                return bean;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * query by type
+     *
+     * @return List<Person>
+     */
+    public ArrayList<Bean> queryByType(String type, String dataBaseName) {
+        ArrayList<Bean> beans = new ArrayList<Bean>();
+        Cursor c = db.rawQuery("SELECT * FROM " + dataBaseName + " where type= ?", new String[]{type});
+        while (c.moveToNext()) {
+            Bean bean = new Bean();
+            int2boolean(c, bean);
+            bean.setWho(c.getString(c.getColumnIndex("who")));
+            bean.setPublishedAt(c.getString(c.getColumnIndex("publishedAt")));
+            bean.setDesc(c.getString(c.getColumnIndex("desc")));
+            bean.setType(c.getString(c.getColumnIndex("type")));
+            bean.setUrl(c.getString(c.getColumnIndex("url")));
+            bean.setObjectId(c.getString(c.getColumnIndex("objectId")));
+            bean.setCreatedAt(c.getString(c.getColumnIndex("createdAt")));
+            bean.setUpdatedAt(c.getString(c.getColumnIndex("updatedAt")));
+            beans.add(bean);
+        }
+        c.close();
+        return beans;
+    }
+
+    /**
+     * int to boolean
+     *
      * @param c
      * @param bean
      */
@@ -107,16 +183,6 @@ public class DbManager {
             bean.setUsed(true);
         else
             bean.setUsed(false);
-    }
-
-    /**
-     * query all persons, return cursor
-     *
-     * @return Cursor
-     */
-    public Cursor queryTheCursor() {
-        Cursor c = db.rawQuery("SELECT * FROM person", null);
-        return c;
     }
 
     /**

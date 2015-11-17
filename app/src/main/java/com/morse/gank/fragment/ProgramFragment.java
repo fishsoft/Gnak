@@ -19,9 +19,10 @@ import com.morse.gank.R;
 import com.morse.gank.adapter.ProgramAdapter;
 import com.morse.gank.beans.Bean;
 import com.morse.gank.beans.ProgramBean;
+import com.morse.gank.db.DbManager;
 import com.morse.gank.utils.JSONUtils;
 import com.morse.gank.utils.NetUtils;
-import com.morse.gank.utils.UrlUtils;
+import com.morse.gank.utils.ConfigUtils;
 
 import java.util.ArrayList;
 
@@ -45,7 +46,7 @@ public class ProgramFragment extends BaseFragment implements SwipeRefreshLayout.
     private ArrayList<Bean> mBeans;
     private ProgramAdapter mAdapter;
     private int mLastItem;
-//    private CollectDaoImp mCollectDaoImp;
+    private DbManager mManager;
 
     public static ProgramFragment newInstance() {
         ProgramFragment fragment = new ProgramFragment();
@@ -57,18 +58,14 @@ public class ProgramFragment extends BaseFragment implements SwipeRefreshLayout.
         super.onCreate(savedInstanceState);
         Bundle bundle = getArguments();
         mTitle = bundle.getString("title");
-//        mCollectDaoImp=new CollectDaoImp(getActivity(),mTitle);
+        mManager = new DbManager(getActivity());
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        if (NetUtils.isNetWork(getActivity())) {
-            mView = inflater.inflate(R.layout.fragment_program, null);
-            ButterKnife.bind(this, mView);
-            initView();
-        } else {
-            mView = inflater.inflate(R.layout.no_net, null);
-        }
+        mView = inflater.inflate(R.layout.fragment_program, null);
+        ButterKnife.bind(this, mView);
+        initView();
         return mView;
     }
 
@@ -115,17 +112,20 @@ public class ProgramFragment extends BaseFragment implements SwipeRefreshLayout.
         }
 
         RequestQueue queue = Volley.newRequestQueue(getActivity());
-        StringRequest request = new StringRequest(UrlUtils.PRE_URL + mTitle + UrlUtils.SUF_URL + index, new Response.Listener
+        StringRequest request = new StringRequest(ConfigUtils.PRE_URL + mTitle + ConfigUtils.SUF_URL + index, new Response.Listener
                 () {
             @Override
             public void onResponse(Object response) {
                 ProgramBean programBean = JSONUtils.parseObject(response.toString(), ProgramBean.class);
                 if (null != programBean && !programBean.isError()) {
                     ArrayList<Bean> beans = (ArrayList<Bean>) programBean.getBeans();
-//                    mCollectDaoImp.insert(beans);
-                    mBeans.addAll(beans);
-                    if (null != mAdapter) {
-                        mAdapter.notifyDataSetChanged();
+                    //判断网络数据是否为空
+                    if (beans.size() > 0) {
+                        mManager.insert(beans,ConfigUtils.DATABASENAME_GANK);
+                        mBeans.addAll(beans);
+                        if (null != mAdapter) {
+                            mAdapter.notifyDataSetChanged();
+                        }
                     }
                 }
                 refreshFinish();
@@ -146,12 +146,16 @@ public class ProgramFragment extends BaseFragment implements SwipeRefreshLayout.
      * get data from local database
      */
     private void getLocalData() {
-//        List<Bean> beans=mCollectDaoImp.query(mTitle);
-//        if (null!=beans){
-//            mBeans.addAll(beans);
-//        }else {
+        ArrayList<Bean> beans = mManager.queryByType(mTitle,ConfigUtils.DATABASENAME_GANK);
+        if (null != beans && beans.size() > 0) {
+            mBeans.clear();
+            mBeans.addAll(beans);
+            if (null != mAdapter) {
+                mAdapter.notifyDataSetChanged();
+            }
+        } else {
             Snackbar.make(mView, "网络异常", Snackbar.LENGTH_LONG).show();
-//        }
+        }
         refreshFinish();
     }
 
@@ -171,5 +175,11 @@ public class ProgramFragment extends BaseFragment implements SwipeRefreshLayout.
     public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.unbind(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mManager.closeDB();
     }
 }

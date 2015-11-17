@@ -22,10 +22,14 @@ public class DbHelper extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE IF NOT EXISTS gank" +
                 "(_id INTEGER PRIMARY KEY AUTOINCREMENT, who VARCHAR, publishedAt TEXT, desc TEXT, type VARCHAR, url " +
                 "TEXT, used INTEGER, objectId TEXT, createdAt TEXT, updatedAt TEXT)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS collect" +
+                "(_id INTEGER PRIMARY KEY AUTOINCREMENT, who VARCHAR, publishedAt TEXT, desc TEXT, type VARCHAR, url " +
+                "TEXT, used INTEGER, objectId TEXT, createdAt TEXT, updatedAt TEXT)");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("ALTER TABLE person ADD COLUMN other STRING");
+        db.execSQL("ALTER TABLE gank ADD COLUMN other STRING");
+        db.execSQL("ALTER TABLE collect ADD COLUMN other STRING");
     }
 }
