@@ -43,6 +43,7 @@ public class ProgramFragment extends BaseFragment implements SwipeRefreshLayout.
     private View mView;
     private String mTitle;
     private int index = 1;
+    private static final int FIRST_DATA=1;
     private ArrayList<Bean> mBeans;
     private ProgramAdapter mAdapter;
     private int mLastItem;
@@ -168,7 +169,7 @@ public class ProgramFragment extends BaseFragment implements SwipeRefreshLayout.
 
     @Override
     public void onRefresh() {
-        initData(1);
+        initData(FIRST_DATA);
     }
 
 
