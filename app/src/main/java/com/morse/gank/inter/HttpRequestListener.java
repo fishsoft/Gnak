@@ -6,7 +6,7 @@ package com.morse.gank.inter;
  */
 public interface HttpRequestListener {
 
-    public void onSuccess(String s);
+    public void onSuccess(Object o);
 
     public void onFailure(String s);
 }

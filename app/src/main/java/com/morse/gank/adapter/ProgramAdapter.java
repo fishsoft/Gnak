@@ -7,15 +7,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.drawee.view.SimpleDraweeView;
 import com.morse.gank.R;
 import com.morse.gank.activity.WebActivity;
 import com.morse.gank.beans.Bean;
-import com.morse.gank.utils.ImageUtils;
 import com.morse.gank.utils.StringUtils;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -35,7 +34,6 @@ public class ProgramAdapter extends RecyclerView.Adapter<ProgramAdapter.ProgramH
         mBeans = beans;
         mTag = tag;
         mInflater = LayoutInflater.from(context);
-        Fresco.initialize(context);
     }
 
     @Override
@@ -54,7 +52,7 @@ public class ProgramAdapter extends RecyclerView.Adapter<ProgramAdapter.ProgramH
             if (holder.mImage.getVisibility() != View.VISIBLE) {
                 holder.mImage.setVisibility(View.VISIBLE);
             }
-            ImageUtils.display(holder.mImage, mBeans.get(position).getUrl());
+            Picasso.with(mContext).load(mBeans.get(position).getUrl()).into(holder.mImage);
         } else {
             if (holder.mProgramTitle.getVisibility() != View.VISIBLE) {
                 holder.mProgramTitle.setVisibility(View.VISIBLE);
@@ -77,7 +75,7 @@ public class ProgramAdapter extends RecyclerView.Adapter<ProgramAdapter.ProgramH
     public class ProgramHolder extends RecyclerView.ViewHolder {
 
         public CardView mListItem;
-        public SimpleDraweeView mImage;
+        public ImageView mImage;
         public TextView mProgramTitle;
         public TextView mProgramAuthor;
         public TextView mPublishAt;
@@ -85,7 +83,7 @@ public class ProgramAdapter extends RecyclerView.Adapter<ProgramAdapter.ProgramH
         public ProgramHolder(final View itemView) {
             super(itemView);
             mListItem = (CardView) itemView.findViewById(R.id.list_item);
-            mImage = (SimpleDraweeView) itemView.findViewById(R.id.image);
+            mImage = (ImageView) itemView.findViewById(R.id.image);
             mProgramTitle = (TextView) itemView.findViewById(R.id.program_title);
             mProgramAuthor = (TextView) itemView.findViewById(R.id.program_author);
             mPublishAt = (TextView) itemView.findViewById(R.id.publishedAt);
